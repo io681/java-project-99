@@ -6,7 +6,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,17 +26,16 @@ public class User {
     @GeneratedValue(strategy = IDENTITY)
     private long id;
 
-    @NotBlank
     private String firstName;
 
-    @NotBlank
     private String lastName;
 
     @Email
     @Column(unique = true)
     private String email;
 
-    @NotBlank
+    @NotNull
+    @Size(min = 3)
     private String password;
 
     @CreatedDate

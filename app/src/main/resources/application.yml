@@ -3,3 +3,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+user:
+  username: hexlet@example.com
+  password: qwerty
