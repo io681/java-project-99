@@ -4,6 +4,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-user:
-  username: hexlet@example.com
-  password: qwerty
+rsa:
+  private-key: classpath:certs/private.pem
+  public-key: classpath:certs/public.pem

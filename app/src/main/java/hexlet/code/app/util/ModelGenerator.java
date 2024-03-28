@@ -16,7 +16,7 @@ public class ModelGenerator {
 
     private final Faker faker = new Faker();;
 
-    @PostConstruct
+//    @PostConstruct
     private void initUser() {
         userModel = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
