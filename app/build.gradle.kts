@@ -60,8 +60,12 @@ tasks.test {
 		// showCauses = true
 		showStandardStreams = true
 	}
+
+	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.jacocoTestReport { reports { xml.required.set(true) } }
