@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -21,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,10 +42,14 @@ public final class UserControllerTest {
     private ModelGenerator modelGenerator;
 
     private User testUser;
+    private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor tokenAdmin;
 
     @BeforeEach
     public void setUp() {
-        testUser = Instancio.of(modelGenerator.getUserModel()).create();
+        tokenAdmin = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
+        testUser = Instancio.of(modelGenerator.getUserModel())
+                .create();
+//        userRepository.save(testUser);
     }
 
     @Test
@@ -50,10 +57,10 @@ public final class UserControllerTest {
         userRepository.save(testUser);
         var testUser2 = Instancio.of(modelGenerator.getUserModel()).create();
         userRepository.save(testUser2);
-        var testUser3 = Instancio.of(modelGenerator.getUserModel()).create();
-        userRepository.save(testUser3);
 
-        var result = mockMvc.perform(get("/api/users"))
+        MockHttpServletRequestBuilder request = get("/api/users").with(tokenAdmin);
+
+        var result = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -65,7 +72,7 @@ public final class UserControllerTest {
     public void testShow() throws Exception {
         userRepository.save(testUser);
 
-        var request = get("/api/users/{id}", testUser.getId());
+        MockHttpServletRequestBuilder request = get("/api/users/{id}", testUser.getId()).with(tokenAdmin);
         var result = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
@@ -83,7 +90,8 @@ public final class UserControllerTest {
 
         var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(testUser));
+                .content(om.writeValueAsString(testUser))
+                .with(tokenAdmin);
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
@@ -107,7 +115,8 @@ public final class UserControllerTest {
 
         var request = put("/api/users/{id}", testUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
+                .content(om.writeValueAsString(dto))
+                .with(tokenAdmin);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
@@ -125,7 +134,7 @@ public final class UserControllerTest {
 
         userRepository.save(testUser);
 
-        var request = delete("/api/users/{id}", testUser.getId());
+        var request = delete("/api/users/{id}", testUser.getId()).with(tokenAdmin);
 
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());
