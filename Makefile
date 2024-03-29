@@ -1,32 +1,37 @@
 .DEFAULT_GOAL := build-run
 
+#setup:
+#	./gradlew wrapper --gradle-version 8.4
 
 clean:
-	make -C app clean
+	./gradlew clean
 
 build:
-	make -C app build
+	./gradlew clean build
 
 install:
-	make -C app install
+	./gradlew clean install
 
 run-dist:
-	make -C app run-dist
+	./build/install/app/bin/app
 
 run:
-	make -C app run
+	./gradlew run
+
+start:
+	./gradlew bootRun --args='--spring.profiles.active=development'
 
 test:
-	make -C app test
+	./gradlew test
 
 report:
-	make -C app report
+	./gradlew jacocoTestReport
 
 lint:
-	make -C app lint
+	./gradlew checkstyleMain checkstyleTest
 
 update-deps:
-	make -C app update-deps
+	./gradlew useLatestVersions
 
 
 build-run: build run
