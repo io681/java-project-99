@@ -1,7 +1,7 @@
 #FROM eclipse-temurin:20-jdk
 FROM gradle:8.3.0-jdk20
 
-WORKDIR /app
+WORKDIR /
 
 #COPY gradle gradle
 #COPY build.gradle.kts .
@@ -10,7 +10,7 @@ WORKDIR /app
 
 #RUN ./gradlew --no-daemon dependencies
 
-COPY /app .
+COPY . .
 #COPY config config
 
 #RUN ./gradlew --no-daemon build
