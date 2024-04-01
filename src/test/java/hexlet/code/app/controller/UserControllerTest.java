@@ -1,4 +1,4 @@
-package hexlet.code.app;
+package hexlet.code.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.mapper.UserMapper;
@@ -49,7 +49,6 @@ public final class UserControllerTest {
         tokenAdmin = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
         testUser = Instancio.of(modelGenerator.getUserModel())
                 .create();
-//        userRepository.save(testUser);
     }
 
     @Test
@@ -127,7 +126,6 @@ public final class UserControllerTest {
         assertThat(expectedUser.getLastName()).isEqualTo(dto.getLastName());
         assertThat(expectedUser.getEmail()).isEqualTo(dto.getEmail());
     }
-
 
     @Test
     public void testDelete() throws Exception {
