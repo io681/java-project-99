@@ -1,8 +1,8 @@
 package hexlet.code.app.mapper;
 
-import hexlet.code.app.dto.UserCreateDTO;
-import hexlet.code.app.dto.UserDTO;
-import hexlet.code.app.dto.UserUpdateDTO;
+import hexlet.code.app.dto.userDTO.UserCreateDTO;
+import hexlet.code.app.dto.userDTO.UserDTO;
+import hexlet.code.app.dto.userDTO.UserUpdateDTO;
 import hexlet.code.app.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Mapper(
         // Подключение JsonNullableMapper
-        uses = {JsonNullableMapper.class},
+        uses = {JsonNullableMapper.class, ReferenceMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE

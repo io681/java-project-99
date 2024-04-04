@@ -2,6 +2,7 @@ package hexlet.code.app.model;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Table;
@@ -18,24 +19,30 @@ import java.time.LocalDateTime;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Table(name = "task_statuses")
+@Table(name = "tasks")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class TaskStatus implements BaseEntity {
+public class Task implements BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;
 
     @NotNull
-    @Column(unique = true)
     @Size(min = 1)
     private String name;
 
-    @NotNull
     @Column(unique = true)
-    @Size(min = 1)
-    private String slug;
+    private Integer index;
+
+    private String description;
+
+    @NotNull
+    @ManyToOne
+    private TaskStatus taskStatus;
+
+    @ManyToOne
+    private User assignee;
 
     @CreatedDate
     private LocalDateTime createdAt;

@@ -41,6 +41,7 @@ public final class UserControllerTest {
     @Autowired
     private ModelGenerator modelGenerator;
 
+
     private User testUser;
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor tokenAdmin;
 
