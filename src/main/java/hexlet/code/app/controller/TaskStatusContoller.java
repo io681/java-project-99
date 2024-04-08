@@ -4,6 +4,7 @@ import hexlet.code.app.dto.taskStatusDTO.TaskStatusCreateDTO;
 import hexlet.code.app.dto.taskStatusDTO.TaskStatusDTO;
 import hexlet.code.app.dto.taskStatusDTO.TaskStatusUpdateDTO;
 import hexlet.code.app.service.TaskStatusService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/task_statuses")
+@SecurityRequirement(name = "Authorization")
 public class TaskStatusContoller {
     @Autowired
     private TaskStatusService taskStatusService;

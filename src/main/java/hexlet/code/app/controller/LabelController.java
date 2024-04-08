@@ -4,6 +4,7 @@ import hexlet.code.app.dto.labelDTO.LabelCreateDTO;
 import hexlet.code.app.dto.labelDTO.LabelDTO;
 import hexlet.code.app.dto.labelDTO.LabelUpdateDTO;
 import hexlet.code.app.service.LabelService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/labels")
+@SecurityRequirement(name = "Authorization")
 public class LabelController {
     @Autowired
     private LabelService labelService;

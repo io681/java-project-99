@@ -4,6 +4,7 @@ import hexlet.code.app.dto.taskDTO.TaskCreateDTO;
 import hexlet.code.app.dto.taskDTO.TaskDTO;
 import hexlet.code.app.dto.taskDTO.TaskUpdateDTO;
 import hexlet.code.app.service.TaskService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
+@SecurityRequirement(name = "Authorization")
 public class TaskController {
     @Autowired
     private TaskService taskService;
