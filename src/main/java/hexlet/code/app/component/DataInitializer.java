@@ -1,7 +1,9 @@
 package hexlet.code.app.component;
 
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.service.UserService;
 import lombok.AllArgsConstructor;
@@ -22,13 +24,20 @@ public class DataInitializer implements ApplicationRunner {
     @Autowired
     private TaskStatusRepository taskStatusRepository;
 
+    @Autowired
+    private LabelRepository labelRepository;
+
     private final String[] initialSlugsTaskStatus =
             {"draft", "to_review", "to_be_fixed", "to_publish", "published"};
+
+    private final String[] initialLabels =
+            {"feature", "bug"};
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         createAdminUser();
         initTaskStatuses();
+        initLabels();
     }
 
     private void createAdminUser() {
@@ -49,5 +58,17 @@ public class DataInitializer implements ApplicationRunner {
                 .toList();
 
         result.forEach(taskStatusRepository::save);
+    }
+
+    private void initLabels() {
+        var result = Arrays.stream(initialLabels)
+                .map(n -> {
+                    var label = new Label();
+                    label.setName(n);
+                    return label;
+                })
+                .toList();
+
+        result.forEach(labelRepository::save);
     }
 }

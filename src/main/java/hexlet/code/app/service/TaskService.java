@@ -36,9 +36,9 @@ public class TaskService {
     }
 
     public TaskDTO show(Long id) {
-        var taskStatus = taskRepository.findById(id)
+        var task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
-        return taskMapper.map(taskStatus);
+        return taskMapper.map(task);
 
     }
 
@@ -68,7 +68,7 @@ public class TaskService {
     }
 
     public void delete(Long id) {
-        var task = taskRepository.findById(id)
+        taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
 
         taskRepository.deleteById(id);

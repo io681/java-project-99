@@ -60,7 +60,7 @@ public final class UserService implements UserDetailsManager {
     }
 
     public void delete(Long id) {
-        var user = userRepository.findById(id)
+        userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
 
         userRepository.deleteById(id);
