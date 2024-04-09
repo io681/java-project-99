@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.dto.taskDTO.TaskCreateDTO;
 import hexlet.code.app.dto.taskDTO.TaskDTO;
 import hexlet.code.app.mapper.TaskMapper;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
@@ -22,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import java.util.ArrayList;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -54,26 +58,35 @@ public class TaskControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private LabelRepository labelRepository;
+
     private Task testTask = new Task();
     private User testUser;
-    private TaskStatus taskStatus;
+    private TaskStatus testTaskStatus;
+    private Label testLabel = new Label();
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor tokenAdmin;
 
     @BeforeEach
     public void setUpTest() {
         tokenAdmin = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
 
-        taskStatus = taskStatusRepository.findBySlug("to_review").get();
+        testTaskStatus = taskStatusRepository.findBySlug("to_review").get();
 
         testUser = Instancio.of(modelGenerator.getUserModel())
                 .create();
         userRepository.save(testUser);
 
+        testLabel.setName("testLabel");
+        labelRepository.save(testLabel);
+
         testTask.setName("testName1");
         testTask.setIndex(1);
         testTask.setDescription("test description 1");
-        testTask.setTaskStatus(taskStatus);
+        testTask.setTaskStatus(testTaskStatus);
         testTask.setAssignee(testUser);
+        testTask.setLabels(new ArrayList<>());
+        testTask.getLabels().add(testLabel);
     }
 
     @Test
@@ -84,12 +97,11 @@ public class TaskControllerTest {
         testTask2.setName("testName1");
         testTask2.setIndex(2);
         testTask2.setDescription("test description 1");
-        testTask2.setTaskStatus(taskStatus);
+        testTask2.setTaskStatus(testTaskStatus);
         testTask2.setAssignee(testUser);
         taskRepository.save(testTask2);
 
         MockHttpServletRequestBuilder request = get("/api/tasks").with(tokenAdmin);
-
         var result = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
@@ -111,7 +123,8 @@ public class TaskControllerTest {
         assertThatJson(body).and(
                 v -> v.node("title").isEqualTo(testTask.getName()),
                 v -> v.node("status").isEqualTo(testTask.getTaskStatus().getSlug()),
-                v -> v.node("assignee_id").isEqualTo(testTask.getAssignee().getId())
+                v -> v.node("assignee_id").isEqualTo(testTask.getAssignee().getId()),
+                v -> v.node("labels[0]").isEqualTo(testTask.getLabels().get(0).getName())
         );
     }
 
@@ -121,14 +134,15 @@ public class TaskControllerTest {
         testDTO.setTitle("testName1");
         testDTO.setIndex(1);
         testDTO.setContent("test description 1");
-        testDTO.setStatus(taskStatus.getSlug());
+        testDTO.setStatus(testTaskStatus.getSlug());
         testDTO.setAssigneeId(testUser.getId());
+        testDTO.setLabels(new ArrayList<>());
+        testDTO.getLabels().add(testLabel.getName());
 
         var request = post("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(testDTO))
                 .with(tokenAdmin);
-
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
@@ -137,6 +151,8 @@ public class TaskControllerTest {
         assertThat(expectedTask).isNotNull();
         assertThat(expectedTask.getName()).isEqualTo(testDTO.getTitle());
         assertThat(expectedTask.getAssignee().getId()).isEqualTo(testDTO.getAssigneeId());
+        assertThat(expectedTask.getLabels().get(0).getName()).isEqualTo(testDTO.getLabels().get(0));
+
     }
 
     @Test
@@ -147,11 +163,17 @@ public class TaskControllerTest {
         dto.setTitle("newTitle");
         dto.setContent("New content");
 
+        Label testLabel2 = new Label();
+        testLabel2.setName("New testLabel");
+        labelRepository.save(testLabel2);
+
+        dto.setLabels(new ArrayList<>());
+        dto.getLabels().add(testLabel2.getName());
+
         var request = put("/api/tasks/{id}", testTask.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(dto))
                 .with(tokenAdmin);
-
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
@@ -159,15 +181,14 @@ public class TaskControllerTest {
 
         assertThat(expectedTask.getName()).isEqualTo(dto.getTitle());
         assertThat(expectedTask.getDescription()).isEqualTo(dto.getContent());
+        assertThat(expectedTask.getLabels().get(0).getName()).isEqualTo(dto.getLabels().get(0));
     }
 
     @Test
     public void testDelete() throws Exception {
-
         taskRepository.save(testTask);
 
         var request = delete("/api/tasks/{id}", testTask.getId()).with(tokenAdmin);
-
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());
 
@@ -178,5 +199,6 @@ public class TaskControllerTest {
     public void cleanData() {
         taskRepository.deleteAll();
         userRepository.deleteById(testUser.getId());
+        labelRepository.deleteAll();
     }
 }
