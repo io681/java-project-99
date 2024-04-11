@@ -14,16 +14,19 @@ public class TaskSpecification {
                 .and(withLabelId(params.getLabelId()));
     }
     private Specification<Task> withContainTitle(String text) {
-        return (root, query, cb) -> text == null ? cb.conjunction() : cb.like(root.get("name"), "%" + text.toLowerCase() + "%");
+        return (root, query, cb) -> text == null ? cb.conjunction()
+                : cb.like(root.get("name"), "%" + text.toLowerCase() + "%");
 
     }
 
     private Specification<Task> withAssigneeId(Long assigneeId) {
-        return (root, query, cb) -> assigneeId == null ? cb.conjunction() : cb.equal(root.get("assignee").get("id"), assigneeId);
+        return (root, query, cb) -> assigneeId == null ? cb.conjunction()
+                : cb.equal(root.get("assignee").get("id"), assigneeId);
     }
 
     private Specification<Task> withStatus(String status) {
-        return (root, query, cb) -> status == null ? cb.conjunction() : cb.equal(root.get("taskStatus").get("slug"), status);
+        return (root, query, cb) -> status == null ? cb.conjunction()
+                : cb.equal(root.get("taskStatus").get("slug"), status);
     }
 
     private Specification<Task> withLabelId(Long labelId) {
