@@ -2,11 +2,17 @@ package hexlet.code.app.controller;
 
 import hexlet.code.app.dto.taskDTO.TaskCreateDTO;
 import hexlet.code.app.dto.taskDTO.TaskDTO;
+import hexlet.code.app.dto.taskDTO.TaskParamsDTO;
 import hexlet.code.app.dto.taskDTO.TaskUpdateDTO;
+import hexlet.code.app.mapper.TaskMapper;
+import hexlet.code.app.model.Task;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.service.TaskService;
+import hexlet.code.app.specification.TaskSpecification;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +32,22 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private TaskSpecification taskSpecification;
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
     @GetMapping(path = "")
-    public List<TaskDTO> index() {
-        return taskService.index();
+    public List<TaskDTO> index(TaskParamsDTO params) {
+        Specification<Task> spec = taskSpecification.build(params);
+        List<Task> result = taskRepository.findAll(spec);
+        return result.stream()
+                .map(taskMapper::map)
+                .toList();
     }
 
     @GetMapping(path = "/{id}")
