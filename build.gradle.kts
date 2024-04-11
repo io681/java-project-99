@@ -9,6 +9,7 @@ plugins {
 	jacoco
 	id("org.springframework.boot") version "3.2.4"
 	id("io.spring.dependency-management") version "1.1.4"
+	id("io.sentry.jvm.gradle") version "4.4.0"
 }
 
 group = "hexlet.code"
@@ -34,6 +35,8 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.6.0")
 
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
+    implementation ("io.sentry:sentry-spring-boot-starter-jakarta:7.8.0")
 
 	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 	implementation("org.mapstruct:mapstruct:1.6.0.Beta1")
@@ -69,3 +72,15 @@ tasks.withType<Test> {
 }
 
 tasks.jacocoTestReport { reports { xml.required.set(true) } }
+
+sentry {
+	includeSourceContext = true
+
+	org = "io681"
+	projectName = "java-spring-boot"
+	authToken = System.getenv("SENTRY_AUTH_TOKEN")
+}
+
+tasks.sentryBundleSourcesJava {
+	enabled = System.getenv("SENTRY_AUTH_TOKEN") != null
+}
