@@ -9,6 +9,7 @@ import hexlet.code.app.model.Task;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.service.TaskService;
 import hexlet.code.app.specification.TaskSpecification;
+import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,13 @@ public class TaskController {
     public List<TaskDTO> index(TaskParamsDTO params) {
         Specification<Task> spec = taskSpecification.build(params);
         List<Task> result = taskRepository.findAll(spec);
+
+        try {
+            throw new Exception("This is a test.");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+        }
+
         return result.stream()
                 .map(taskMapper::map)
                 .toList();
