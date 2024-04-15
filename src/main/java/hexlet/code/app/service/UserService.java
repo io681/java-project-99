@@ -4,8 +4,10 @@ import hexlet.code.app.dto.userDTO.UserCreateDTO;
 import hexlet.code.app.dto.userDTO.UserDTO;
 import hexlet.code.app.dto.userDTO.UserUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
+import hexlet.code.app.exception.UnprocessableEntityException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +22,9 @@ import java.util.List;
 public final class UserService implements UserDetailsManager {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     private UserMapper userMapper;
@@ -62,6 +67,10 @@ public final class UserService implements UserDetailsManager {
     public void delete(Long id) {
         userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
+
+        if (!taskRepository.findAllByAssigneeIsNotNull().isEmpty()) {
+            throw new UnprocessableEntityException("User : " + id + " linked to task");
+        }
 
         userRepository.deleteById(id);
     }

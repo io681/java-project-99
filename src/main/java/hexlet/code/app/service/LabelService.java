@@ -4,8 +4,10 @@ import hexlet.code.app.dto.labelDTO.LabelCreateDTO;
 import hexlet.code.app.dto.labelDTO.LabelDTO;
 import hexlet.code.app.dto.labelDTO.LabelUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
+import hexlet.code.app.exception.UnprocessableEntityException;
 import hexlet.code.app.mapper.LabelMapper;
 import hexlet.code.app.repository.LabelRepository;
+import hexlet.code.app.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,9 @@ import java.util.List;
 public class LabelService {
     @Autowired
     private LabelRepository labelRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     private LabelMapper labelMapper;
@@ -53,6 +58,11 @@ public class LabelService {
     public void delete(Long id) {
         labelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
+
+        if (!taskRepository.findAllByLabelsIsNotNull().isEmpty()) {
+            throw new UnprocessableEntityException("Label : " + id + " linked to task");
+        }
+
         labelRepository.deleteById(id);
     }
 }

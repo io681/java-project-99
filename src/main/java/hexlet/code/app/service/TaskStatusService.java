@@ -4,7 +4,9 @@ import hexlet.code.app.dto.taskStatusDTO.TaskStatusCreateDTO;
 import hexlet.code.app.dto.taskStatusDTO.TaskStatusDTO;
 import hexlet.code.app.dto.taskStatusDTO.TaskStatusUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
+import hexlet.code.app.exception.UnprocessableEntityException;
 import hexlet.code.app.mapper.TaskStatusMapper;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ import java.util.List;
 public class TaskStatusService {
     @Autowired
     private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     private TaskStatusMapper taskStatusMapper;
@@ -53,6 +58,10 @@ public class TaskStatusService {
     public void delete(Long id) {
         taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
+
+        if (!taskRepository.findAllByTaskStatusIsNotNull().isEmpty()) {
+            throw new UnprocessableEntityException("TaskStatus : " + id + " linked to task");
+        }
 
         taskStatusRepository.deleteById(id);
     }
