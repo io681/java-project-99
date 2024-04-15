@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,8 +29,12 @@ public class LabelController {
     private LabelService labelService;
 
     @GetMapping(path = "")
-    public List<LabelDTO> index() {
-        return labelService.index();
+    public ResponseEntity<List<LabelDTO>> index() {
+        var result = labelService.index();
+
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.size()))
+                .body(result);
     }
 
     @GetMapping(path = "/{id}")

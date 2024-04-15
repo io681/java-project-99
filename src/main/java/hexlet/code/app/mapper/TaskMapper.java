@@ -51,14 +51,14 @@ public abstract class TaskMapper {
 
     @Named("labelsToLabelsNames")
     public List<String> labelsToLabelsNames(List<Label> labels) {
-        return labels.isEmpty() ? new ArrayList<String>() : labels.stream()
+        return labels == null ? new ArrayList<String>() : labels.stream()
                 .map(Label::getName)
                 .collect(Collectors.toList());
     }
 
     @Named("labelsNamesToLabels")
     public List<Label> labelsNamesToLabels(List<String> labelsNames) {
-        return labelsNames.isEmpty() ? new ArrayList<Label>() : labelsNames.stream()
+        return labelsNames == null ? new ArrayList<Label>() : labelsNames.stream()
                 .map(name -> labelRepository.findByName(name).get())
                 .collect(Collectors.toList());
     }

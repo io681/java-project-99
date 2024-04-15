@@ -9,12 +9,12 @@ import hexlet.code.app.model.Task;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.service.TaskService;
 import hexlet.code.app.specification.TaskSpecification;
-import io.sentry.Sentry;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,19 +43,16 @@ public class TaskController {
     private TaskMapper taskMapper;
 
     @GetMapping(path = "")
-    public List<TaskDTO> index(TaskParamsDTO params) {
+    public ResponseEntity<List<TaskDTO>> index(TaskParamsDTO params) {
         Specification<Task> spec = taskSpecification.build(params);
-        List<Task> result = taskRepository.findAll(spec);
-
-        try {
-            throw new Exception("This is a test.");
-        } catch (Exception e) {
-            Sentry.captureException(e);
-        }
-
-        return result.stream()
-                .map(taskMapper::map)
+        var result = taskRepository.findAll(spec)
+                .stream()
+                .map((taskMapper::map))
                 .toList();
+
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.size()))
+                .body(result);
     }
 
     @GetMapping(path = "/{id}")
