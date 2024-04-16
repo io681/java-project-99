@@ -3,7 +3,6 @@ package hexlet.code.app.dto.taskDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.openapitools.jackson.nullable.JsonNullable;
 
 import java.util.List;
 

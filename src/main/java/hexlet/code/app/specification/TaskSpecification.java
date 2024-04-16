@@ -30,6 +30,7 @@ public class TaskSpecification {
     }
 
     private Specification<Task> withLabelId(Long labelId) {
-        return (root, query, cb) -> labelId == null ? cb.conjunction() : cb.equal(root.get("labels").in("id"), labelId);
+        return (root, query, cb) -> labelId == null
+                ? cb.conjunction() : cb.equal(root.joinList("labels").get("id"), labelId);
     }
 }
