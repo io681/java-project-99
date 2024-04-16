@@ -49,7 +49,9 @@ public class TaskService {
     public TaskDTO create(TaskCreateDTO dto) {
         var task = taskMapper.map(dto);
 
-        var statusTask = taskStatusRepository.findBySlug(dto.getStatus()).get();
+        var statusTask = taskStatusRepository.findBySlug(dto.getStatus())
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + dto.getStatus()));
+
         task.setTaskStatus(statusTask);
 
         if (dto.getAssigneeId() != null) {

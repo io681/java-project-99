@@ -18,5 +18,6 @@ public class TaskUpdateDTO {
     private JsonNullable<String> title;
     private JsonNullable<String> content;
     private JsonNullable<String> status;
-    private JsonNullable<List<String>> labels;
+//    private JsonNullable<List<String>> labels;
+    private JsonNullable<List<Long>> taskLabelIds;
 }

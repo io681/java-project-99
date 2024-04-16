@@ -30,36 +30,37 @@ public abstract class TaskMapper {
     private LabelRepository labelRepository;
 
     @Mapping(target = "taskStatus.slug", source = "status")
-    @Mapping(target = "assignee.id", source = "assigneeId")
+    @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "name", source = "title")
-    @Mapping(target = "labels", source = "labels", qualifiedByName = "labelsNamesToLabels")
+    @Mapping(target = "description", source = "content")
+    @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "labelIdsToLabels")
     public abstract Task map(TaskCreateDTO dto);
 
     @Mapping(target = "status", source = "taskStatus.slug")
     @Mapping(target = "assigneeId", source = "assignee.id")
     @Mapping(target = "title", source = "name")
-    @Mapping(target = "labels", source = "labels", qualifiedByName = "labelsToLabelsNames")
+    @Mapping(target = "content", source = "description")
+    @Mapping(target = "taskLabelIds", source = "labels", qualifiedByName = "labelsToLabelIds")
     public abstract TaskDTO map(Task model);
 
     @Mapping(target = "taskStatus", source = "status")
-    @Mapping(target = "assignee.id", source = "assigneeId")
-    @Mapping(target = "description", source = "content")
+    @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "name", source = "title")
-    @Mapping(target = "labels", source = "labels", qualifiedByName = "labelsNamesToLabels")
+    @Mapping(target = "description", source = "content")
+    @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "labelIdsToLabels")
     public abstract void update(TaskUpdateDTO dto, @MappingTarget Task model);
 
-
-    @Named("labelsToLabelsNames")
-    public List<String> labelsToLabelsNames(List<Label> labels) {
-        return labels == null ? new ArrayList<String>() : labels.stream()
-                .map(Label::getName)
+    @Named("labelsToLabelIds")
+    public List<Long> labelsToLabelIds(List<Label> labels) {
+        return labels == null ? new ArrayList<Long>() : labels.stream()
+                .map(Label::getId)
                 .collect(Collectors.toList());
     }
 
-    @Named("labelsNamesToLabels")
-    public List<Label> labelsNamesToLabels(List<String> labelsNames) {
-        return labelsNames == null ? new ArrayList<Label>() : labelsNames.stream()
-                .map(name -> labelRepository.findByName(name).get())
+    @Named("labelIdsToLabels")
+    public List<Label> labelIdsToLabels(List<Long> labelsIds) {
+        return labelsIds == null ? new ArrayList<Label>() : labelsIds.stream()
+                .map(id -> labelRepository.findById(id).get())
                 .collect(Collectors.toList());
     }
 }
