@@ -124,7 +124,7 @@ public class TaskControllerTest {
                 v -> v.node("title").isEqualTo(testTask.getName()),
                 v -> v.node("status").isEqualTo(testTask.getTaskStatus().getSlug()),
                 v -> v.node("assignee_id").isEqualTo(testTask.getAssignee().getId()),
-                v -> v.node("labels[0]").isEqualTo(testTask.getLabels().get(0).getName())
+                v -> v.node("taskLabelIds[0]").isEqualTo(testTask.getLabels().get(0).getId())
         );
     }
 
@@ -136,8 +136,8 @@ public class TaskControllerTest {
         testDTO.setContent("test description 1");
         testDTO.setStatus(testTaskStatus.getSlug());
         testDTO.setAssigneeId(testUser.getId());
-        testDTO.setLabels(new ArrayList<>());
-        testDTO.getLabels().add(testLabel.getName());
+        testDTO.setTaskLabelIds(new ArrayList<>());
+        testDTO.getTaskLabelIds().add(testLabel.getId());
 
         var request = post("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +151,7 @@ public class TaskControllerTest {
         assertThat(expectedTask).isNotNull();
         assertThat(expectedTask.getName()).isEqualTo(testDTO.getTitle());
         assertThat(expectedTask.getAssignee().getId()).isEqualTo(testDTO.getAssigneeId());
-        assertThat(expectedTask.getLabels().get(0).getName()).isEqualTo(testDTO.getLabels().get(0));
+        assertThat(expectedTask.getLabels().get(0).getId()).isEqualTo(testDTO.getTaskLabelIds().get(0));
 
     }
 
@@ -167,8 +167,8 @@ public class TaskControllerTest {
         testLabel2.setName("New testLabel");
         labelRepository.save(testLabel2);
 
-        dto.setLabels(new ArrayList<>());
-        dto.getLabels().add(testLabel2.getName());
+        dto.setTaskLabelIds(new ArrayList<>());
+        dto.getTaskLabelIds().add(testLabel2.getId());
 
         var request = put("/api/tasks/{id}", testTask.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -181,7 +181,7 @@ public class TaskControllerTest {
 
         assertThat(expectedTask.getName()).isEqualTo(dto.getTitle());
         assertThat(expectedTask.getDescription()).isEqualTo(dto.getContent());
-        assertThat(expectedTask.getLabels().get(0).getName()).isEqualTo(dto.getLabels().get(0));
+        assertThat(expectedTask.getLabels().get(0).getId()).isEqualTo(dto.getTaskLabelIds().get(0));
     }
 
     @Test
