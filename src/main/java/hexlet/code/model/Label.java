@@ -13,7 +13,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -33,5 +33,5 @@ public class Label {
     private String name;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 }
