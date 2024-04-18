@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -yq make unzip
 
 RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
     && unzip gradle-${GRADLE_VERSION}-bin.zip \
-    && rm gradle-${GRADLE_VERSION}-bin.
+    && rm gradle-${GRADLE_VERSION}-bin.zip
 
 ENV GRADLE_HOME=/opt/gradle
 
