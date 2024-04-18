@@ -13,12 +13,13 @@
 ## TASK MANAGER | МЕНЕДЖЕР ЗАДАЧ
 Веб-приложение "Менеджер задач" для создания, отслеживания и назначения задач.
 Требуется авторизация.
-Учетка админа:
-    Username: hexlet@example.com
-    Password: qwerty
+
+Учетка админа: hexlet@example.com / qwerty
 
 Проект задеплоен на https://java-project-99-8qdh.onrender.com
 
 ## Локальный запуск
+
 https://localhost:8080/
+
 make start
