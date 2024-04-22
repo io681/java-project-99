@@ -3,12 +3,14 @@ package hexlet.code.service;
 import hexlet.code.dto.userDTO.UserCreateDTO;
 import hexlet.code.dto.userDTO.UserDTO;
 import hexlet.code.dto.userDTO.UserUpdateDTO;
+import hexlet.code.exception.ForbiddenException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.exception.UnprocessableEntityException;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.util.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +34,9 @@ public final class UserService implements UserDetailsManager {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserUtils userUtils;
+
     public List<UserDTO> index() {
         var users = userRepository.findAll();
 
@@ -44,7 +49,6 @@ public final class UserService implements UserDetailsManager {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
 
-
         return userMapper.map(user);
     }
 
@@ -56,8 +60,14 @@ public final class UserService implements UserDetailsManager {
     }
 
     public UserDTO update(UserUpdateDTO dto, Long id) {
+        var currentUser = userUtils.getCurrentUser();
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
+
+        if (!currentUser.equals(user)) {
+            throw new ForbiddenException("Update other users is not available");
+        }
+
         userMapper.update(dto, user);
         userRepository.save(user);
 
@@ -65,8 +75,13 @@ public final class UserService implements UserDetailsManager {
     }
 
     public void delete(Long id) {
-        userRepository.findById(id)
+        var currentUser = userUtils.getCurrentUser();
+        var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
+
+        if (!currentUser.equals(user)) {
+            throw new ForbiddenException("Delete other users is not available");
+        }
 
         if (!taskRepository.findAllByAssigneeIsNotNull().isEmpty()) {
             throw new UnprocessableEntityException("User : " + id + " linked to task");

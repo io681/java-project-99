@@ -44,12 +44,15 @@ public final class UserControllerTest {
 
     private User testUser;
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor tokenAdmin;
+    private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor tokenTestUser;
+
 
     @BeforeEach
     public void setUp() {
         tokenAdmin = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
         testUser = Instancio.of(modelGenerator.getUserModel())
                 .create();
+        tokenTestUser = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
     }
 
     @Test
@@ -116,7 +119,7 @@ public final class UserControllerTest {
         var request = put("/api/users/{id}", testUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(dto))
-                .with(tokenAdmin);
+                .with(tokenTestUser);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
@@ -133,7 +136,7 @@ public final class UserControllerTest {
 
         userRepository.save(testUser);
 
-        var request = delete("/api/users/{id}", testUser.getId()).with(tokenAdmin);
+        var request = delete("/api/users/{id}", testUser.getId()).with(tokenTestUser);
 
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());
