@@ -34,4 +34,7 @@ RUN gradle installDist
 # EXPOSE 7070
 
 #CMD java -jar build/libs/app-1.0-SNAPSHOT.jar
-CMD ./build/install/app/bin/app
+#CMD ./build/install/app/bin/app
+CMD ./gradlew run --args='--spring.profiles.active=production'
+
+
