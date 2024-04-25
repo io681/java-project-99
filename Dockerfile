@@ -27,14 +27,15 @@ WORKDIR /
 COPY . .
 #COPY config config
 
-#RUN ./gradlew --no-daemon build
-RUN gradle installDist
+RUN ./gradlew --no-daemon build
+#RUN gradle installDist
 
 #ENV JAVA_OPTS "-Xmx512M -Xms512M"
 # EXPOSE 7070
 
 #CMD java -jar build/libs/app-1.0-SNAPSHOT.jar
+CMD java -jar build/libs/app-0.0.1-SNAPSHOT.jar --spring.profiles.active=production
 #CMD ./build/install/app/bin/app
-CMD ./gradlew run --args='--spring.profiles.active=production'
+#CMD ./gradlew run --args='--spring.profiles.active=production'
 
 
