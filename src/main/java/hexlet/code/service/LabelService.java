@@ -56,11 +56,11 @@ public class LabelService {
     }
 
     public void delete(Long id) {
-        labelRepository.findById(id)
+        var label = labelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
 
-        if (!taskRepository.findAllByLabelsIsNotNull().isEmpty()) {
-            throw new UnprocessableEntityException("Label : " + id + " linked to task");
+        if (taskRepository.findByLabelsName(label.getName()).isPresent()) {
+            throw new UnprocessableEntityException("Label : " + label.getName() + " linked to task");
         }
 
         labelRepository.deleteById(id);

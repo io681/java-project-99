@@ -22,7 +22,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Label {
+public class Label implements BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;

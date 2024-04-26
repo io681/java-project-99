@@ -5,7 +5,9 @@ import hexlet.code.dto.taskDTO.TaskDTO;
 import hexlet.code.dto.taskDTO.TaskUpdateDTO;
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
+import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskStatusRepository;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
@@ -29,6 +31,9 @@ public abstract class TaskMapper {
     @Autowired
     private LabelRepository labelRepository;
 
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
     @Mapping(target = "taskStatus.slug", source = "status")
     @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "name", source = "title")
@@ -43,7 +48,7 @@ public abstract class TaskMapper {
     @Mapping(target = "taskLabelIds", source = "labels", qualifiedByName = "labelsToLabelIds")
     public abstract TaskDTO map(Task model);
 
-    @Mapping(target = "taskStatus", source = "status")
+    @Mapping(target = "taskStatus", source = "status", qualifiedByName = "slugToTaskStatus")
     @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
@@ -62,5 +67,10 @@ public abstract class TaskMapper {
         return labelsIds == null ? new ArrayList<Label>() : labelsIds.stream()
                 .map(id -> labelRepository.findById(id).get())
                 .collect(Collectors.toList());
+    }
+
+    @Named("slugToTaskStatus")
+    public TaskStatus slugToTaskStatus(String slug) {
+        return taskStatusRepository.findBySlug(slug).orElseThrow();
     }
 }

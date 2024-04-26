@@ -83,8 +83,8 @@ public final class UserService implements UserDetailsManager {
             throw new ForbiddenException("Delete other users is not available");
         }
 
-        if (!taskRepository.findAllByAssigneeIsNotNull().isEmpty()) {
-            throw new UnprocessableEntityException("User : " + id + " linked to task");
+        if (taskRepository.findByAssigneeEmail(user.getEmail()).isPresent()) {
+            throw new UnprocessableEntityException("User : " + user.getEmail() + " linked to task");
         }
 
         userRepository.deleteById(id);

@@ -56,11 +56,11 @@ public class TaskStatusService {
     }
 
     public void delete(Long id) {
-        taskStatusRepository.findById(id)
+        var statusTask = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found: " + id));
 
-        if (!taskRepository.findAllByTaskStatusIsNotNull().isEmpty()) {
-            throw new UnprocessableEntityException("TaskStatus : " + id + " linked to task");
+        if (taskRepository.findByTaskStatusName(statusTask.getName()).isPresent()) {
+            throw new UnprocessableEntityException("TaskStatus : " + statusTask.getName() + " linked to task");
         }
 
         taskStatusRepository.deleteById(id);
