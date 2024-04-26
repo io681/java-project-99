@@ -4,7 +4,9 @@ import hexlet.code.model.Label;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
 import org.assertj.core.util.introspection.CaseFormatUtils;
@@ -22,10 +24,16 @@ public class DataInitializer implements ApplicationRunner {
     private UserService userService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TaskStatusRepository taskStatusRepository;
 
     @Autowired
     private LabelRepository labelRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     private final String[] initialSlugsTaskStatus =
             {"draft", "to_review", "to_be_fixed", "to_publish", "published"};
@@ -35,6 +43,7 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        cleanOldData();
         createAdminUser();
         initTaskStatuses();
         initLabels();
@@ -70,5 +79,12 @@ public class DataInitializer implements ApplicationRunner {
                 .toList();
 
         result.forEach(labelRepository::save);
+    }
+
+    private void cleanOldData() {
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        labelRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }
